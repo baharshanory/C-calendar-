@@ -1,0 +1,44 @@
+using System;
+using Microsoft.Maui.Controls;
+
+namespace YourNamespace
+{
+    public partial class MainPage : ContentPage
+    {
+        private DateTime _currentDate;
+
+        public MainPage()
+        {
+            InitializeComponent();
+            _currentDate = DateTime.Now;
+            UpdateCalendar();
+        }
+
+        private void UpdateCalendar()
+        {
+            CurrentMonthLabel.Text = _currentDate.ToString("MMMM yyyy");
+            CalendarGrid.Children.Clear();
+            PopulateCalendar(_currentDate);
+        }
+
+        private void PopulateCalendar(DateTime date)
+        {
+            DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+            DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            int startDayOffset = (int)firstDayOfMonth.DayOfWeek;
+
+            int dayCounter = 1;
+            for (int row = 1; row <= 6; row++)
+            {
+                for (int col = 0; col < 7; col++)
+                {
+                    if (row == 1 && col < startDayOffset)
+                    {
+                        CalendarGrid.Children.Add(new Label { Text = "", HorizontalOptions = LayoutOptions.Center }, col, row);
+                    }
+                    else if (dayCounter <= lastDayOfMonth.Day)
+                    {
+                        var dayLabel = new Label { Text = dayCounter.ToString(), HorizontalOptions = LayoutOptions.Center };
+                        dayLabel.GestureRecognizers.Add(new TapGestureRecognizer
+                        {
+                            Command = new Command(() => OnDateSelected(dayCounter)),LayoutOptions.Center
